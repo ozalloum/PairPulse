@@ -1,0 +1,5 @@
+# Preserve the checksummed reference files byte for byte across platforms.
+* -text
+*.pdf binary
+*.png binary
+*.jpeg binary

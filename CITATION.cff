@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Please cite PairPulse when using this code or its numerical data."
+type: software
+title: "PairPulse: paired Dirac and quantum-kinetic solvers for pulsed-field pair creation"
+version: 0.1.0
+repository-code: "https://github.com/ozalloum/PairPulse"
+authors:
+  - family-names: Zalloum
+    given-names: Othman H. Y.
+    affiliation: Palestine Polytechnic University
+    orcid: "https://orcid.org/0000-0001-7282-1332"
+license: MIT
+abstract: >-
+  Reference implementation for fermion pair creation in prescribed spatially
+  homogeneous, time-dependent electric fields in 1+1 dimensions. Independent
+  Dirac-mode and quantum-kinetic integrations are checked against the exact
+  temporal Sauter-pulse result. The repository includes code, tests, a notebook,
+  spectra, convergence diagnostics, figures, and manuscript materials.
+keywords:
+  - pair production
+  - Dirac equation
+  - quantum kinetic equations
+  - Sauter pulse
+  - reproducible computing
