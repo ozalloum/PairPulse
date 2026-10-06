@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-06",
+  "reason": "Rebuild the manuscript with updated Figures 4 and 5 from results",
+  "engine": "pdfTeX 1.40.28 (MiKTeX 25.12)",
+  "source_changed": false,
+  "source_sha256": "e61b6d4a4f833bdac0a7d5ee4d3bfb39fb5a562223159ee735c438948a4744e8",
+  "previous_pdf_sha256": "8d7706c02cf08a3b34a23ff6ec5f346ce84e4f0ac4f0f4f9f0bf8f614969fca3",
+  "rebuilt_pdf_sha256": "649028f8817f8cdc191d29af882043097045150120177667b7c19cc866481af8",
+  "pdf_pages": 10,
+  "undefined_references": false,
+  "undefined_citations": false,
+  "oversized_float_warnings": false,
+  "rendered_pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "remaining_warnings": [
+    "CAS maketitle overfull box / empty hyperref anchors; rendered title page inspected",
+    "CAS sans-serif small-caps font substitution"
+  ],
+  "figures": [
+    {
+      "source": "results/figure1_sauter_validation.pdf",
+      "file_sha256": "19f4cb51bedcf09807da86617c5bcf3e8159889bed69967c0b1df8d07b6c57bd",
+      "drawing_stream_sha256": "ed64c868946de1646040f9e0547fe262bbcb00f15cf37f816198ee74d0e1bd99",
+      "pdf_page": 4,
+      "matches_embedded_drawing": true
+    },
+    {
+      "source": "results/figure2_double_pulse.pdf",
+      "file_sha256": "b9fb48854dbfc1fb6ec41198245a6abbbd3a531290278eabc1f8ff8f5f688b2c",
+      "drawing_stream_sha256": "c52f5843968c5129684951dcbbee026350e82758f239d7f6faa80282c5238605",
+      "pdf_page": 4,
+      "matches_embedded_drawing": true
+    },
+    {
+      "source": "results/figure3_qke_invariant.pdf",
+      "file_sha256": "37791f27002e46063e76e55f3476571ccf7f4ff1435c4ffe81347f2d04dbfcb5",
+      "drawing_stream_sha256": "9af58148f51bebe0b1d46aaf66f016a9a47bd8d3e29767ef26a857dde2714073",
+      "pdf_page": 5,
+      "matches_embedded_drawing": true
+    },
+    {
+      "source": "results/figure4_reproducibility_structure.pdf",
+      "file_sha256": "54419a3f78623ed522c47838e403913a49957de11a998864a2a6dfa7a3d9d93e",
+      "drawing_stream_sha256": "018035161b04835483c6236c5a4539c8f42a4c02266c75937aff970ec70ccdd4",
+      "pdf_page": 6,
+      "matches_embedded_drawing": true
+    },
+    {
+      "source": "results/figure5_computational_workflow.pdf",
+      "file_sha256": "aaede42c5d4f731ac7fe7ec25f17ffa60be6f2d253e2715d2e0f536095032449",
+      "drawing_stream_sha256": "6bb4d47cbe518d6cd2ec74c8112db33417c2f677fb3827bce20f6e3a97ec4fa0",
+      "pdf_page": 7,
+      "matches_embedded_drawing": true
+    },
+    {
+      "source": "results/figure6_sauter_window_error_map.pdf",
+      "file_sha256": "1f3427892d1f57bac3aa8ac303b84ba388c9ff451093771e1ba764a62e9da77e",
+      "drawing_stream_sha256": "8c3bba02c25f20daf33f8f712a34c6775b1bd84bd91476e1f0b0b94d5df8dd15",
+      "pdf_page": 8,
+      "matches_embedded_drawing": true
+    }
+  ]
+}

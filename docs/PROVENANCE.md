@@ -69,3 +69,24 @@ supplied PNG files passed image-integrity checks. The notebook was not
 executed and the manuscript was not compiled as part of repository
 preparation. These checks establish reproduction of the supplied numerical
 examples, not broader physical validation.
+
+## Manuscript figure update
+
+On 6 October 2026, the manuscript PDF was rebuilt from the existing
+`manuscript/pairpulse.tex` after the author identified outdated Figures 4
+and 5 in the initially supplied PDF. The source already referenced the
+updated PDF figures in `results/`; no manuscript text or numerical results
+were changed for this update.
+
+The rebuild used pdfTeX 1.40.28 (MiKTeX 25.12) with the bundled CAS files.
+Missing LaTeX packages and CM-Super font maps were supplied from TeX Live
+in a temporary build environment. Repeated compilation resolved the
+citations and cross-references. All ten PDF pages were rendered for layout
+review, including the taller replacement workflow diagram. Figures 4 and
+5 occur on PDF pages 6 and 7 (printed pages 5 and 6), respectively.
+
+The decoded PDF drawing streams for all six embedded figures were checked
+against their corresponding `results/*.pdf` files. In particular, Figures
+4 and 5 match the current result files exactly. Build details and hashes
+are recorded in [manuscript_rebuild.json](manuscript_rebuild.json). The root
+checksum manifest has been refreshed for the updated repository snapshot.
