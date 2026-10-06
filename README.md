@@ -83,7 +83,7 @@ their own licenses.
 ## Citation and provenance
 
 Citation metadata are provided in [CITATION.cff](CITATION.cff). No DOI has been
-assigned in this repository. The supplied manuscript is included for context;
-its repository-availability placeholders refer to the pre-release package.
+assigned in this repository. The manuscript's program summary and code and
+data availability statement link to the public PairPulse repository.
 The repository preparation and original checksum discrepancies are documented
 in [docs/PROVENANCE.md](docs/PROVENANCE.md).
