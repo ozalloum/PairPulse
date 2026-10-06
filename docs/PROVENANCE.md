@@ -42,9 +42,10 @@ Fresh computations and plots are not expected to match every original byte:
 floating-point libraries, fonts, PDF metadata and runtime measurements can
 vary. Check numerical agreement separately from file integrity.
 
-The bundled manuscript and submission notes describe the pre-release
-package and may contain repository/DOI placeholders. No DOI or journal
-acceptance is implied by this snapshot. The MIT license applies to PairPulse
+At initial repository preparation, the bundled manuscript and submission
+notes described the pre-release package and contained repository placeholders.
+The availability update below replaces those placeholders with the public URL.
+No DOI or journal acceptance is implied by this snapshot. The MIT license applies to PairPulse
 code; bundled CAS files retain their upstream license notices.
 
 ## Verification of this snapshot
@@ -90,3 +91,18 @@ against their corresponding `results/*.pdf` files. In particular, Figures
 4 and 5 match the current result files exactly. Build details and hashes
 are recorded in [manuscript_rebuild.json](manuscript_rebuild.json). The root
 checksum manifest has been refreshed for the updated repository snapshot.
+
+## Manuscript availability update
+
+On 6 October 2026, the developer's repository link in the program summary
+and the Code and data availability statement were updated to point to
+https://github.com/ozalloum/PairPulse. The statement describes the public
+code, numerical data, documentation, and manuscript materials, and
+distinguishes the PairPulse code license from the upstream CAS notices.
+The README and submission notes were synchronized with this change.
+No DOI, archival deposit, or journal acceptance is claimed.
+
+The manuscript was rebuilt with the same CAS template and updated figures.
+Current source and PDF hashes and figure checks are recorded in
+[manuscript_rebuild.json](manuscript_rebuild.json). The numerical code and
+result files were unchanged in this availability update.
