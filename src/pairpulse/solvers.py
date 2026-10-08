@@ -20,9 +20,9 @@ class ModeResult:
 
 
 def _validate_mode(momentum: float, mass: float, charge: float) -> None:
-    if mass <= 0.0:
+    if not np.isfinite(mass) or mass <= 0.0:
         raise ValueError("mass must be positive")
-    if charge <= 0.0:
+    if not np.isfinite(charge) or charge <= 0.0:
         raise ValueError("charge magnitude must be positive")
     if not np.isfinite(momentum):
         raise ValueError("momentum must be finite")
@@ -36,12 +36,19 @@ def _instantaneous_kinematics(t: float, p: float, m: float,
 
 
 def _maximum_step(t0: float, tf: float, p: float, m: float, q: float,
-                  pulse: ElectricPulse) -> float:
+                  pulse: ElectricPulse, coefficient: float = 0.18) -> float:
     # Bound phase advance for strongly accelerated modes as well as low-field runs.
     samples = np.linspace(t0, tf, 257)
     pi_max = max(abs(p - q * float(pulse.potential(float(t)))) for t in samples)
     omega_max = sqrt(m * m + pi_max * pi_max)
-    return 0.18 / omega_max
+    return coefficient / omega_max
+
+
+def _validate_controls(tail_factor, rtol, atol, max_step_coefficient):
+    for name, value in (("tail_factor", tail_factor), ("rtol", rtol),
+                        ("atol", atol), ("max_step_coefficient", max_step_coefficient)):
+        if not np.isfinite(value) or value <= 0:
+            raise ValueError(f"{name} must be finite and positive")
 
 
 def solve_dirac_mode(
@@ -53,6 +60,7 @@ def solve_dirac_mode(
     tail_factor: float = 12.0,
     rtol: float = 2e-10,
     atol: float = 2e-12,
+    max_step_coefficient: float = 0.18,
 ) -> ModeResult:
     r"""Evolve the two-component Dirac mode and project onto the out state.
 
@@ -61,6 +69,7 @@ def solve_dirac_mode(
     ``tail_factor`` pulse widths beyond the outer pulse centers.
     """
     _validate_mode(momentum, mass, charge)
+    _validate_controls(tail_factor, rtol, atol, max_step_coefficient)
     t0, tf = pulse.time_window(tail_factor)
     pi0, _ = _instantaneous_kinematics(t0, momentum, mass, charge, pulse)
     pif, _ = _instantaneous_kinematics(tf, momentum, mass, charge, pulse)
@@ -82,7 +91,7 @@ def solve_dirac_mode(
         ])
 
     sol = solve_ivp(rhs, (t0, tf), initial, method="DOP853", rtol=rtol,
-                    atol=atol, max_step=_maximum_step(t0, tf, momentum, mass, charge, pulse))
+                    atol=atol, max_step=_maximum_step(t0, tf, momentum, mass, charge, pulse, max_step_coefficient))
     if not sol.success:
         raise RuntimeError(f"Dirac mode integration failed: {sol.message}")
     state = sol.y[:, -1]
@@ -100,6 +109,7 @@ def solve_qke_mode(
     tail_factor: float = 12.0,
     rtol: float = 2e-10,
     atol: float = 2e-12,
+    max_step_coefficient: float = 0.18,
 ) -> ModeResult:
     r"""Integrate the non-Markovian quantum-kinetic mode equations.
 
@@ -110,6 +120,7 @@ def solve_qke_mode(
     representation and this system are integrated independently.
     """
     _validate_mode(momentum, mass, charge)
+    _validate_controls(tail_factor, rtol, atol, max_step_coefficient)
     t0, tf = pulse.time_window(tail_factor)
 
     def rhs(t: float, y: np.ndarray) -> np.ndarray:
@@ -124,7 +135,7 @@ def solve_qke_mode(
         ])
 
     sol = solve_ivp(rhs, (t0, tf), np.zeros(3), method="DOP853", rtol=rtol,
-                    atol=atol, max_step=_maximum_step(t0, tf, momentum, mass, charge, pulse))
+                    atol=atol, max_step=_maximum_step(t0, tf, momentum, mass, charge, pulse, max_step_coefficient))
     if not sol.success:
         raise RuntimeError(f"QKE mode integration failed: {sol.message}")
     f, u, v = sol.y[:, -1]

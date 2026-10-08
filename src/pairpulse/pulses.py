@@ -33,10 +33,12 @@ class SauterPulse:
     center: float = 0.0
 
     def __post_init__(self) -> None:
-        if self.amplitude < 0.0:
+        if not np.isfinite(self.amplitude) or self.amplitude < 0.0:
             raise ValueError("amplitude must be nonnegative")
-        if self.duration <= 0.0:
+        if not np.isfinite(self.duration) or self.duration <= 0.0:
             raise ValueError("duration must be positive")
+        if not np.isfinite(self.center):
+            raise ValueError("center must be finite")
 
     def field(self, t: float | np.ndarray) -> float | np.ndarray:
         x = (np.asarray(t) - self.center) / self.duration
@@ -49,7 +51,7 @@ class SauterPulse:
         return float(ans) if np.ndim(ans) == 0 else ans
 
     def time_window(self, tail_factor: float = 12.0) -> tuple[float, float]:
-        if tail_factor <= 0.0:
+        if not np.isfinite(tail_factor) or tail_factor <= 0.0:
             raise ValueError("tail_factor must be positive")
         half_width = tail_factor * self.duration
         return self.center - half_width, self.center + half_width
