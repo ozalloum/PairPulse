@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pairpulse"
-version = "0.1.0"
+version = "0.2.0"
 description = "Cross-validated mode solvers for pair creation in time-dependent homogeneous electric fields"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
-authors = [{name = "PairPulse contributors"}]
+authors = [{name = "Othman H. Y. Zalloum"}]
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 
 [project.optional-dependencies]
