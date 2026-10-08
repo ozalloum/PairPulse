@@ -33,6 +33,34 @@ class PairPulseTests(unittest.TestCase):
         self.assertTrue(np.isclose(train.field(0.0), first.field(0.0) + second.field(0.0)))
         self.assertTrue(np.isclose(train.potential(0.0), first.potential(0.0) + second.potential(0.0)))
 
+    def test_refined_step_cap_retains_exact_benchmark(self):
+        pulse = SauterPulse(.3, 2)
+        exact = sauter_exact_occupation(.75, pulse)
+        for solver in (solve_dirac_mode, solve_qke_mode):
+            result = solver(.75, pulse, tail_factor=20, rtol=2e-12,
+                            atol=2e-14, max_step_coefficient=.09)
+            self.assertLess(abs(result.occupation-exact), 1e-10)
+
+    def test_time_translation_leaves_occupation_unchanged(self):
+        for solver in (solve_dirac_mode, solve_qke_mode):
+            first = solver(.4, SauterPulse(.3, 1.1)).occupation
+            shifted = solver(.4, SauterPulse(.3, 1.1, 7)).occupation
+            self.assertLess(abs(first-shifted), 1e-10)
+
+    def test_nonfinite_pulse_parameters_are_rejected(self):
+        for bad in (np.nan, np.inf, -np.inf):
+            for kwargs in ({'amplitude':bad,'duration':1},
+                           {'amplitude':.3,'duration':bad},
+                           {'amplitude':.3,'duration':1,'center':bad}):
+                with self.assertRaises(ValueError): SauterPulse(**kwargs)
+
+    def test_invalid_solver_controls_are_rejected(self):
+        for solver in (solve_dirac_mode, solve_qke_mode):
+            for key in ('mass','charge','tail_factor','rtol','atol','max_step_coefficient'):
+                for bad in (0, -1, np.nan, np.inf):
+                    with self.assertRaises(ValueError):
+                        solver(0, SauterPulse(.3,1), **{key:bad})
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -43,6 +43,63 @@ def spectrum(pulse, momenta: np.ndarray, *, exact: bool = False):
                  (dirac, qke, exact_values, inv, norm, nfev))
 
 
+def _style_spectrum_axes(ax) -> None:
+    """Use twice the original axis and tick sizes; put plot context in captions."""
+    ax.xaxis.label.set_size(20)
+    ax.yaxis.label.set_size(20)
+    ax.tick_params(axis="both", which="major", labelsize=20)
+    ax.xaxis.get_offset_text().set_size(20)
+    ax.yaxis.get_offset_text().set_size(20)
+    # Freeze a padded layout so PDF and PNG backends use the same positions.
+    fig = ax.figure
+    fig.get_layout_engine().set(w_pad=0.12, h_pad=0.12)
+    fig.canvas.draw()
+    fig.canvas.draw()
+    fig.set_layout_engine("none")
+
+
+def plot_spectra(output: Path, p_single, d, k, exact, inv,
+                 p_double, dd, dk) -> None:
+    """Draw Figures 1--3 from supplied arrays without recomputing the data."""
+    # Figure 1: cross-validation against an analytic result.
+    fig, ax = plt.subplots(figsize=(6.3, 5.3), constrained_layout=True)
+    ax.semilogy(p_single, exact, color="black", lw=2.0, label="exact Sauter result")
+    ax.semilogy(p_single, d, "o", ms=3.5, mfc="none", label="Dirac modes")
+    ax.semilogy(p_single, k, "x", ms=4.2, label="quantum-kinetic modes")
+    ax.set(xlabel=r"canonical momentum $p/m$", ylabel=r"occupation $f_p$")
+    ax.legend(frameon=False, fontsize=20, loc="upper center",
+              bbox_to_anchor=(0.5, -0.30), borderaxespad=0,
+              handlelength=1.5, labelspacing=0.3)
+    _style_spectrum_axes(ax)
+    fig.savefig(output / "figure1_sauter_validation.pdf")
+    fig.savefig(output / "figure1_sauter_validation.png", dpi=300)
+    plt.close(fig)
+
+    # Figure 2: spectra for a pulse train; no exact formula is assumed.
+    fig, ax = plt.subplots(figsize=(6.3, 5.3), constrained_layout=True)
+    ax.plot(p_double, dd, "o-", ms=3.2, lw=1.1, label="Dirac modes")
+    ax.plot(p_double, dk, "x--", ms=3.6, lw=1.0, label="quantum-kinetic modes")
+    ax.set(xlabel=r"canonical momentum $p/m$", ylabel=r"occupation $f_p$")
+    ax.set_yticks(np.arange(0, 0.014, 0.002))
+    ax.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter("%.3f"))
+    ax.legend(frameon=False, fontsize=20, loc="upper center",
+              bbox_to_anchor=(0.5, -0.30), borderaxespad=0,
+              handlelength=1.5, labelspacing=0.3)
+    _style_spectrum_axes(ax)
+    fig.savefig(output / "figure2_double_pulse.pdf")
+    fig.savefig(output / "figure2_double_pulse.png", dpi=300)
+    plt.close(fig)
+
+    # Figure 3: the QKE Bloch-vector invariant, sampled over the spectrum.
+    fig, ax = plt.subplots(figsize=(6.3, 4.6), constrained_layout=True)
+    ax.semilogy(p_single, np.maximum(inv, 1e-18), "o-", ms=3.4)
+    ax.set(xlabel=r"canonical momentum $p/m$", ylabel="absolute invariant error")
+    _style_spectrum_axes(ax)
+    fig.savefig(output / "figure3_qke_invariant.pdf")
+    fig.savefig(output / "figure3_qke_invariant.png", dpi=300)
+    plt.close(fig)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=Path("results"))
@@ -98,37 +155,7 @@ def main() -> None:
               "dirac_norm_error", "qke_invariant_error", "dirac_nfev", "qke_nfev"],
              tail_rows)
 
-    # Figure 1: cross-validation against an analytic result.
-    fig, ax = plt.subplots(figsize=(6.3, 4.1), constrained_layout=True)
-    ax.semilogy(p_single, exact, color="black", lw=2.0, label="exact Sauter result")
-    ax.semilogy(p_single, d, "o", ms=3.5, mfc="none", label="Dirac modes")
-    ax.semilogy(p_single, k, "x", ms=4.2, label="quantum-kinetic modes")
-    ax.set(xlabel=r"canonical momentum $p/m$", ylabel=r"occupation $f_p$",
-           title="Single Sauter pulse: independent mode solvers")
-    ax.legend(frameon=False)
-    fig.savefig(args.output / "figure1_sauter_validation.pdf")
-    fig.savefig(args.output / "figure1_sauter_validation.png", dpi=180)
-    plt.close(fig)
-
-    # Figure 2: spectra for a pulse train; no exact formula is assumed.
-    fig, ax = plt.subplots(figsize=(6.3, 4.1), constrained_layout=True)
-    ax.plot(p_double, dd, "o-", ms=3.2, lw=1.1, label="Dirac modes")
-    ax.plot(p_double, dk, "x--", ms=3.6, lw=1.0, label="quantum-kinetic modes")
-    ax.set(xlabel=r"canonical momentum $p/m$", ylabel=r"occupation $f_p$",
-           title="Spectrum from two separated Sauter pulses")
-    ax.legend(frameon=False)
-    fig.savefig(args.output / "figure2_double_pulse.pdf")
-    fig.savefig(args.output / "figure2_double_pulse.png", dpi=180)
-    plt.close(fig)
-
-    # Figure 3: the QKE Bloch-vector invariant, sampled over the spectrum.
-    fig, ax = plt.subplots(figsize=(6.3, 4.1), constrained_layout=True)
-    ax.semilogy(p_single, np.maximum(inv, 1e-18), "o-", ms=3.4)
-    ax.set(xlabel=r"canonical momentum $p/m$", ylabel="absolute invariant error",
-           title=r"QKE diagnostic: $(1-2f)^2+u^2+v^2=1$")
-    fig.savefig(args.output / "figure3_qke_invariant.pdf")
-    fig.savefig(args.output / "figure3_qke_invariant.png", dpi=180)
-    plt.close(fig)
+    plot_spectra(args.output, p_single, d, k, exact, inv, p_double, dd, dk)
 
     metadata = {
         "python": platform.python_version(), "numpy": np.__version__,

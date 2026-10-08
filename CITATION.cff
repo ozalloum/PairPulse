@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Please cite PairPulse when using this code or its numerical data."
 type: software
 title: "PairPulse: paired Dirac and quantum-kinetic solvers for pulsed-field pair creation"
-version: 0.1.0
+version: 0.2.0
 repository-code: "https://github.com/ozalloum/PairPulse"
 authors:
   - family-names: Zalloum

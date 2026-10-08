@@ -1,0 +1,26 @@
+Using Python 3.10.20 environment at: work\pairpulse_validation_2026-10-08\minimum-env
+Resolved 13 packages in 921ms
+Downloading fonttools (1.6MiB)
+Downloading scipy (40.5MiB)
+Downloading pillow (6.9MiB)
+Downloading matplotlib (7.3MiB)
+Downloading numpy (14.1MiB)
+ Downloaded pillow
+ Downloaded fonttools
+ Downloaded matplotlib
+ Downloaded numpy
+ Downloaded scipy
+Prepared 7 packages in 9.07s
+Installed 12 packages in 988ms
+ + contourpy==1.3.2
+ + cycler==0.12.1
+ + fonttools==4.65.0
+ + kiwisolver==1.5.1
+ + matplotlib==3.7.0
+ + numpy==1.24.0
+ + pairpulse==0.2.0 (from file:///C:/Users/ozall/Documents/Codex/2026-10-04/h/work/pairpulse_validation_2026-10-08/dist/pairpulse-0.2.0-py3-none-any.whl)
+ + pillow==12.3.0
+ + pyparsing==3.3.3
+ + python-dateutil==2.9.0.post0
+ + scipy==1.10.0
+ + six==1.17.0

@@ -69,93 +69,99 @@ def make_structure_figure(output: Path, project_root: Path) -> None:
     if missing:
         raise FileNotFoundError(f"Package structure has missing files: {missing}")
 
-    fig, ax = plt.subplots(figsize=(8.0, 4.8))
+    # Fixed-width vector artwork: larger box text remains larger when embedded.
+    fig, ax = plt.subplots(figsize=(7.8, 6.0))
     ax.set_axis_off()
-    ax.text(0.5, 0.97, "PairPulse public reproducibility package",
+    ax.set_position([0, 0, 1, 1])
+    ax.text(0.5, 0.98, "PairPulse public reproducibility package",
             ha="center", va="top", transform=ax.transAxes,
-            fontsize=16, fontweight="bold", color=INK)
-    ax.text(0.5, 0.90, "One source package links mode solvers, validation, generated artifacts, and the manuscript",
+            fontsize=15, fontweight="bold", color=INK)
+    ax.text(0.5, 0.925,
+            "Mode solvers, validation, generated artifacts, and manuscript",
             ha="center", va="top", transform=ax.transAxes,
-            fontsize=9.5, color=MUTED)
+            fontsize=10, color=MUTED)
 
-    # Root node and three content groups describe the actual directory tree.
-    _box(ax, (0.35, 0.735), 0.30, 0.11, "PairPulse/", "MIT-licensed source archive",
-         color=GOLD, title_size=12, body_size=8.6)
+    root_patch = FancyBboxPatch((0.31, 0.775), 0.38, 0.115,
+        boxstyle="round,pad=0.008,rounding_size=0.015", facecolor=GOLD,
+        edgecolor=INK, linewidth=1.3, transform=ax.transAxes)
+    ax.add_patch(root_patch)
+    ax.text(0.5, 0.87, "PairPulse/", fontsize=13, weight="bold",
+            color=INK, ha="center", va="top", transform=ax.transAxes)
+    ax.text(0.5, 0.82, "MIT-licensed source archive", fontsize=10,
+            color=INK, ha="center", va="top", transform=ax.transAxes)
 
-    _box(ax, (0.01, 0.25), 0.31, 0.40, "Source and verification",
-         "src/pairpulse/\n  pulses.py — E(t), A(t)\n  solvers.py — Dirac, QKE\n    exact Sauter benchmark\n\ntests/test_pairpulse.py\nnotebooks/\n  PairPulse_reproduction.ipynb\nREADME · pyproject · LICENSE",
-         color=BLUE, body_size=8.0, mono=True)
-    _box(ax, (0.345, 0.25), 0.31, 0.40, "Scripts and outputs",
-         "scripts/reproduce.py\n  spectra / yields / diagnostics\nscripts/make_\n  reproducibility_figures.py\n  diagrams + error map\n\nresults/\n  CSV datasets + JSON metadata\n  figures: PDF and PNG",
-         color=TEAL, body_size=8.0, mono=True)
-    _box(ax, (0.68, 0.25), 0.31, 0.40, "Manuscript and release",
-         "manuscript/\n  pairpulse.tex + pairpulse.pdf\n  CAS class, styles, assets\n\nscripts/build_manuscript.sh\nCHECKSUMS.sha256\nSUBMISSION_NOTES.md",
-         color=GOLD, body_size=8.0, mono=True)
-    ax.plot([0.50, 0.50], [0.719, 0.697], transform=ax.transAxes,
-            color=INK, linewidth=1.5, solid_capstyle="round", clip_on=False)
-    ax.plot([0.165, 0.835], [0.697, 0.697], transform=ax.transAxes,
-            color=INK, linewidth=1.5, solid_capstyle="round", clip_on=False)
-    _arrow(ax, (0.165, 0.697), (0.165, 0.666))
-    _arrow(ax, (0.50, 0.697), (0.50, 0.666))
-    _arrow(ax, (0.835, 0.697), (0.835, 0.666))
-
-    ax.text(0.5, 0.18,
-            "Rebuild: run both Python scripts → regenerate the CAS PDF → verify CHECKSUMS.sha256",
-            ha="center", va="center", transform=ax.transAxes,
-            fontsize=9.2, color=INK, fontweight="semibold")
-    ax.text(0.5, 0.105,
-            "Generated datasets and figures are included alongside their source-generating code.",
-            ha="center", va="center", transform=ax.transAxes,
-            fontsize=8.4, color=MUTED)
-    fig.subplots_adjust(left=0.025, right=0.975, top=0.98, bottom=0.04)
-    fig.savefig(output / "figure4_reproducibility_structure.pdf", bbox_inches="tight")
-    fig.savefig(output / "figure4_reproducibility_structure.png", dpi=220, bbox_inches="tight")
+    groups = (
+        (0.015, BLUE, "Source and\nverification",
+         "src/pairpulse/\n  pulses.py: E(t), A(t)\n  solvers.py: Dirac, QKE\n  Exact Sauter benchmark\n\n"
+         "tests/test_pairpulse.py\nnotebooks/\n  PairPulse_reproduction.ipynb\n\n"
+         "README, pyproject, LICENSE"),
+        (0.350, TEAL, "Scripts and\noutputs",
+         "scripts/reproduce.py\n  Spectra, yields, diagnostics\n\n"
+         "scripts/\nmake_reproducibility_figures.py\n  Diagrams and error map\n\n"
+         "results/\n  CSV data, JSON metadata\n  Figures: PDF and PNG"),
+        (0.685, GOLD, "Manuscript and\nrelease",
+         "manuscript/\n  pairpulse.tex\n  pairpulse.pdf\n  CAS class, styles, assets\n\n"
+         "scripts/build_manuscript.sh\n\nCHECKSUMS.sha256\nSUBMISSION_NOTES.md"),
+    )
+    for x, color, title, body in groups:
+        patch = FancyBboxPatch((x, 0.165), 0.30, 0.515,
+            boxstyle="round,pad=0.008,rounding_size=0.015", facecolor=color,
+            edgecolor=INK, linewidth=1.3, transform=ax.transAxes)
+        ax.add_patch(patch)
+        ax.text(x + 0.010, 0.65, title, ha="left", va="top", fontsize=12.5,
+                fontweight="bold", color=INK, transform=ax.transAxes,
+                linespacing=1.15)
+        ax.text(x + 0.010, 0.555, body, ha="left", va="top", fontsize=10.5,
+                fontstretch="condensed", color=INK,
+                transform=ax.transAxes, linespacing=1.45)
+    ax.plot([0.5, 0.5], [0.765, 0.73], color=INK, lw=1.3, transform=ax.transAxes)
+    ax.plot([0.165, 0.835], [0.73, 0.73], color=INK, lw=1.3, transform=ax.transAxes)
+    for x in (0.165, 0.5, 0.835):
+        _arrow(ax, (x, 0.73), (x, 0.69))
+    ax.text(0.5, 0.11, "Rebuild: Python scripts → CAS PDF → checksum verification",
+            ha="center", va="center", fontsize=10.5, color=INK,
+            fontweight="semibold", transform=ax.transAxes)
+    ax.text(0.5, 0.05, "Datasets and figures are distributed with their generating code.",
+            ha="center", va="center", fontsize=10, color=MUTED, transform=ax.transAxes)
+    fig.savefig(output / "figure4_reproducibility_structure.pdf")
+    fig.savefig(output / "figure4_reproducibility_structure.png", dpi=300)
     plt.close(fig)
 
 
 def make_workflow_figure(output: Path) -> None:
-    """Draw the run-to-publication workflow implemented by the package."""
-    fig, ax = plt.subplots(figsize=(8.0, 3.8))
+    """Draw the supplied six-stage portrait workflow from editable primitives."""
+    fig, ax = plt.subplots(figsize=(7.8, 10.0))
     ax.set_axis_off()
-    ax.text(0.5, 0.97, "Computational workflow for the reproducibility datasets and figures",
-            ha="center", va="top", transform=ax.transAxes,
-            fontsize=12, fontweight="bold", color=INK)
-    ax.text(0.5, 0.905, "The same field and momentum conventions are used by both independent mode formulations",
-            ha="center", va="top", transform=ax.transAxes,
-            fontsize=8.4, color=MUTED)
-
-    _box(ax, (0.01, 0.53), 0.29, 0.29, "1  Set parameters",
-         "Pulse parameters and units\nMomentum grid p/m\nTail extent L/τ\nSolver tolerances",
-         color=GOLD, title_size=10, body_size=8.5)
-    _box(ax, (0.355, 0.53), 0.29, 0.29, "2  Define the field",
-         "Sauter pulse or pulse train\nE(t), A(t), finite window",
-         color=BLUE, title_size=10, body_size=8.5)
-    _box(ax, (0.70, 0.53), 0.29, 0.29, "3  Solve each mode",
-         "Dirac spinor: DOP853\nQKE state (f,u,v): DOP853\nIndependent integrations",
-         color=TEAL, title_size=10, body_size=8.5)
-    _box(ax, (0.70, 0.105), 0.29, 0.29, "4  Validate each run",
-         "Exact Sauter benchmark\nDirac norm; QKE invariant\nDirac–QKE agreement; tail test",
-         color=BLUE, title_size=10, body_size=8.5)
-    _box(ax, (0.355, 0.105), 0.29, 0.29, "5  Save datasets",
-         "Spectrum and yield CSV\nTail and p–L/τ map CSV\nRun metadata JSON",
-         color=TEAL, title_size=10, body_size=8.5)
-    _box(ax, (0.01, 0.105), 0.29, 0.29, "6  Generate and build",
-         "Python/Matplotlib figures\nLaTeX → two-pass CAS PDF\nPackage checksums",
-         color=GOLD, title_size=10, body_size=8.5)
-
-    _arrow(ax, (0.315, 0.675), (0.340, 0.675))
-    _arrow(ax, (0.660, 0.675), (0.685, 0.675))
-    _arrow(ax, (0.845, 0.515), (0.845, 0.410))
-    _arrow(ax, (0.685, 0.250), (0.660, 0.250))
-    _arrow(ax, (0.340, 0.250), (0.315, 0.250))
-    ax.text(0.5, 0.018,
-            "Scripts: reproduce.py · make_reproducibility_figures.py · build_manuscript.sh",
-            ha="center", va="bottom", transform=ax.transAxes,
-            fontsize=7.8, color=MUTED, family="monospace")
-
-    fig.subplots_adjust(left=0.025, right=0.975, top=0.98, bottom=0.04)
-    fig.savefig(output / "figure5_computational_workflow.pdf", bbox_inches="tight")
-    fig.savefig(output / "figure5_computational_workflow.png", dpi=220, bbox_inches="tight")
+    ax.set_position([0, 0, 1, 1])
+    ax.text(0.5, 0.975, "Computational workflow", ha="center", va="top",
+            fontsize=19, weight="bold", color=INK, transform=ax.transAxes)
+    ax.text(0.5, 0.927, "Shared field conventions; separate state equations",
+            ha="center", va="top", fontsize=12, color=MUTED, transform=ax.transAxes)
+    boxes = [
+        (0.03, 0.67, "1  Set parameters", "Pulse parameters and units\nMomentum grid p/m\nTail extent L/τ\nSolver tolerances", GOLD),
+        (0.03, 0.39, "2  Define the field", "Sauter pulse or pulse train\nE(t), A(t), finite window", BLUE),
+        (0.03, 0.11, "3  Solve each mode", "Dirac spinor: DOP853\nQKE state (f,u,v): DOP853\nSeparate integrations", TEAL),
+        (0.56, 0.67, "4  Validate each run", "Exact Sauter benchmark\nFinal norm and invariant\nDirac–QKE agreement\nTail-window scan", BLUE),
+        (0.56, 0.39, "5  Save datasets", "Spectrum and yield CSV\nTail and p–L/τ map CSV\nRun metadata JSON", TEAL),
+        (0.56, 0.11, "6  Generate and build", "Python/Matplotlib figures\nLaTeX: two-pass CAS PDF\nPackage checksums", GOLD),
+    ]
+    for x, y, title, body, color in boxes:
+        _box(ax, (x,y), 0.41, 0.22, title, body, color=color,
+             title_size=13.5, body_size=12)
+    for x in (0.235, 0.765):
+        _arrow(ax, (x, 0.657), (x, 0.625))
+        _arrow(ax, (x, 0.377), (x, 0.345))
+    ax.plot([0.453, 0.5, 0.5], [0.22, 0.22, 0.78], color=INK,
+            lw=1.5, transform=ax.transAxes)
+    _arrow(ax, (0.5, 0.78), (0.547, 0.78))
+    ax.text(0.5, 0.064, "reproduce.py · make_reproducibility_figures.py",
+            ha="center", va="center", fontsize=10, color=MUTED,
+            transform=ax.transAxes)
+    ax.text(0.5, 0.032, "build_manuscript.sh · verify_checksums.py",
+            ha="center", va="center", fontsize=10, color=MUTED,
+            transform=ax.transAxes)
+    fig.savefig(output / "figure5_computational_workflow.pdf")
+    fig.savefig(output / "figure5_computational_workflow.png", dpi=300)
     plt.close(fig)
 
 
@@ -188,32 +194,43 @@ def make_window_error_map(output: Path, *, points: int,
                          "dirac_nfev", "qke_nfev"))
         writer.writerows(rows)
 
+    return plot_window_error_map(output, momenta, tail_factors, error_dirac, error_qke)
+
+
+def plot_window_error_map(output: Path, momenta, tail_factors,
+                          error_dirac, error_qke) -> dict:
+    """Draw Figure 6 from supplied errors without new integrations."""
     # A floor is needed only to display roundoff-level values on logarithmic axes.
     floor = 1e-16
     ceiling = max(float(error_dirac.max()), float(error_qke.max()))
     norm = LogNorm(vmin=floor, vmax=ceiling)
-    fig, axes = plt.subplots(1, 2, figsize=(10.8, 4.0), sharex=True, sharey=True,
+    fig, axes = plt.subplots(1, 2, figsize=(10.8, 4.6), sharex=True, sharey=True,
                              constrained_layout=True)
     for ax, err, title in zip(axes, (error_dirac, error_qke),
-                              ("Dirac modes", "Quantum-kinetic modes")):
+                              ("(a)", "(b)")):
         mesh = ax.pcolormesh(momenta, tail_factors, np.maximum(err, floor),
                              shading="nearest", cmap="magma_r", norm=norm)
-        ax.set_title(title, fontsize=11, color=INK, pad=8)
-        ax.set_xlabel(r"canonical momentum $p/m$")
-        ax.set_xticks(np.linspace(-1.5, 1.5, 7))
+        ax.set_title(title, fontsize=22, color=INK, pad=8)
+        ax.set_xlabel(r"canonical momentum $p/m$", fontsize=20)
+        ax.tick_params(axis="both", labelsize=20)
+        ax.set_xticks((-1.5, 0.0, 1.5))
         ax.set_yticks(tail_factors)
         ax.grid(which="major", color="white", linewidth=0.35, alpha=0.45)
-    axes[0].set_ylabel(r"tail extent $L/\tau$")
+    axes[0].set_ylabel(r"tail extent $L/\tau$", fontsize=20)
     colorbar = fig.colorbar(mesh, ax=axes, pad=0.025, shrink=0.96)
-    colorbar.set_label(r"absolute error $|f_p(T)-f_p^{\rm exact}|$", rotation=90)
-    fig.suptitle(r"Finite-window error against the asymptotic Sauter benchmark ($E_0/m^2=0.3$, $m\tau=2$)",
-                 fontsize=11, color=INK)
-    fig.savefig(output / "figure6_sauter_window_error_map.pdf", bbox_inches="tight")
-    fig.savefig(output / "figure6_sauter_window_error_map.png", dpi=220, bbox_inches="tight")
+    colorbar.set_label(r"absolute error $|f_p(L)-f_p^{\rm exact}|$", rotation=90, fontsize=20)
+    colorbar.ax.tick_params(labelsize=20)
+    colorbar.set_ticks([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-6])
+    fig.get_layout_engine().set(w_pad=0.12, h_pad=0.12)
+    fig.canvas.draw()
+    fig.canvas.draw()
+    fig.set_layout_engine("none")
+    fig.savefig(output / "figure6_sauter_window_error_map.pdf")
+    fig.savefig(output / "figure6_sauter_window_error_map.png", dpi=300)
     plt.close(fig)
 
     return {
-        "map_points": int(points),
+        "map_points": int(len(momenta)),
         "map_tail_factors": [float(x) for x in tail_factors],
         "map_max_absolute_error_dirac": float(error_dirac.max()),
         "map_max_absolute_error_qke": float(error_qke.max()),

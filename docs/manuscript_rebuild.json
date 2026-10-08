@@ -1,153 +1,74 @@
 {
-  "date": "2026-10-06",
-  "reason": "Update the program summary and Code and data availability statement with the public repository URL",
-  "engine": "pdfTeX 1.40.28 (MiKTeX 25.12)",
-  "source_changed": true,
-  "source_sha256": "1ecb89984f5af184d19e98350af922f6fd060c01f7b9e7b3565efd450eea8f54",
-  "previous_source_sha256": "e61b6d4a4f833bdac0a7d5ee4d3bfb39fb5a562223159ee735c438948a4744e8",
-  "previous_pdf_sha256": "649028f8817f8cdc191d29af882043097045150120177667b7c19cc866481af8",
-  "rebuilt_pdf_sha256": "a8a483eddefb7219f97ff4539d78e25c9621aec8cf8b883bcd67e9d1d0b0b8a3",
-  "pdf_pages": 10,
+  "date": "2026-10-07",
+  "reason": "Author-confirmed CRediT contributions; three remaining scientific/release queries",
+  "engine": "pdfTeX 1.40.28 (MiKTeX 25.12), existing multi-file CAS environment",
+  "built_in_compiler": "Unavailable: Unable to find standard directories for platform",
+  "source_sha256": "a44e873c3bffe300c13d9d7ec2fe242220e4b2e73f39e753b69a903ded0308d9",
+  "rebuilt_pdf_sha256": "0afcf1e44d599266d881ce2fbae31e45bc76931b49f009ca34d2c05424fbb35d",
+  "pdf_pages": 11,
   "undefined_references": false,
   "undefined_citations": false,
   "oversized_float_warnings": false,
-  "rendered_pages_reviewed": [
-    2,
-    9,
-    10
+  "rendered_pages_reviewed_after_credit_update": [
+    10,
+    11
   ],
-  "unchanged_text_pages": [
-    1,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8
-  ],
-  "repository_hyperlinks_verified_on_pdf_pages": [
-    2,
-    9
-  ],
+  "prior_full_visual_review": "All 11 pages inspected before the contribution update; pages 1-9 unchanged in extracted text and drawing content",
+  "credit_confirmation": {
+    "date": "2026-10-07",
+    "source": "Explicit author statement that he carried out all aspects of the work"
+  },
   "remaining_warnings": [
-    "CAS maketitle overfull box / empty hyperref anchors; rendered title page inspected",
+    "CAS maketitle overfull box/empty anchors; visible title and abstract fit after visual inspection",
     "CAS sans-serif small-caps font substitution"
   ],
+  "body_overfull_warnings": false,
+  "author_queries": 3,
   "figures": [
     {
       "source": "results/figure1_sauter_validation.pdf",
-      "file_sha256": "19f4cb51bedcf09807da86617c5bcf3e8159889bed69967c0b1df8d07b6c57bd",
-      "drawing_stream_sha256": "ed64c868946de1646040f9e0547fe262bbcb00f15cf37f816198ee74d0e1bd99",
-      "pdf_page": 4,
-      "matches_embedded_drawing": true
+      "sha256": "89d21ea04fde45b5edf00714702127c1bc53e7dbedf295a553c77f86052a3359",
+      "matches_embedded_drawing": true,
+      "pdf_page": 4
     },
     {
       "source": "results/figure2_double_pulse.pdf",
-      "file_sha256": "b9fb48854dbfc1fb6ec41198245a6abbbd3a531290278eabc1f8ff8f5f688b2c",
-      "drawing_stream_sha256": "c52f5843968c5129684951dcbbee026350e82758f239d7f6faa80282c5238605",
-      "pdf_page": 4,
-      "matches_embedded_drawing": true
+      "sha256": "f64a831dd917d6e60897df68564957fd815fceccb224bdc7dcefc29e82c2fc93",
+      "matches_embedded_drawing": true,
+      "pdf_page": 5
     },
     {
       "source": "results/figure3_qke_invariant.pdf",
-      "file_sha256": "37791f27002e46063e76e55f3476571ccf7f4ff1435c4ffe81347f2d04dbfcb5",
-      "drawing_stream_sha256": "9af58148f51bebe0b1d46aaf66f016a9a47bd8d3e29767ef26a857dde2714073",
-      "pdf_page": 5,
-      "matches_embedded_drawing": true
+      "sha256": "3cb980d56779ef856c483646872bda258ee98ced56d4e20e4ec6644ac7d27121",
+      "matches_embedded_drawing": true,
+      "pdf_page": 5
     },
     {
       "source": "results/figure4_reproducibility_structure.pdf",
-      "file_sha256": "54419a3f78623ed522c47838e403913a49957de11a998864a2a6dfa7a3d9d93e",
-      "drawing_stream_sha256": "018035161b04835483c6236c5a4539c8f42a4c02266c75937aff970ec70ccdd4",
-      "pdf_page": 6,
-      "matches_embedded_drawing": true
+      "sha256": "77d617fde09639586dd5e59ec1f034c7abdb896480ee45d79870f17c7cec3c94",
+      "matches_embedded_drawing": true,
+      "pdf_page": 6
     },
     {
       "source": "results/figure5_computational_workflow.pdf",
-      "file_sha256": "aaede42c5d4f731ac7fe7ec25f17ffa60be6f2d253e2715d2e0f536095032449",
-      "drawing_stream_sha256": "6bb4d47cbe518d6cd2ec74c8112db33417c2f677fb3827bce20f6e3a97ec4fa0",
-      "pdf_page": 7,
-      "matches_embedded_drawing": true
+      "sha256": "da1c0d8b49676cd1ab7f585665e42fadb6be02aeff30c06dfd6ab5d4cb4f4d0e",
+      "matches_embedded_drawing": true,
+      "pdf_page": 7
     },
     {
       "source": "results/figure6_sauter_window_error_map.pdf",
-      "file_sha256": "1f3427892d1f57bac3aa8ac303b84ba388c9ff451093771e1ba764a62e9da77e",
-      "drawing_stream_sha256": "8c3bba02c25f20daf33f8f712a34c6775b1bd84bd91476e1f0b0b94d5df8dd15",
-      "pdf_page": 8,
-      "matches_embedded_drawing": true
+      "sha256": "ceaf0dfc1251a330349a60ef816e1e9364f84f38eec1da0a7224afd7a6b41678",
+      "matches_embedded_drawing": true,
+      "pdf_page": 8
     }
   ],
-  "previous_figure_rebuild": {
-    "date": "2026-10-06",
-    "reason": "Rebuild the manuscript with updated Figures 4 and 5 from results",
-    "engine": "pdfTeX 1.40.28 (MiKTeX 25.12)",
-    "source_changed": false,
-    "source_sha256": "e61b6d4a4f833bdac0a7d5ee4d3bfb39fb5a562223159ee735c438948a4744e8",
-    "previous_pdf_sha256": "8d7706c02cf08a3b34a23ff6ec5f346ce84e4f0ac4f0f4f9f0bf8f614969fca3",
-    "rebuilt_pdf_sha256": "649028f8817f8cdc191d29af882043097045150120177667b7c19cc866481af8",
-    "pdf_pages": 10,
-    "undefined_references": false,
-    "undefined_citations": false,
-    "oversized_float_warnings": false,
-    "rendered_pages_reviewed": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10
-    ],
-    "remaining_warnings": [
-      "CAS maketitle overfull box / empty hyperref anchors; rendered title page inspected",
-      "CAS sans-serif small-caps font substitution"
-    ],
-    "figures": [
-      {
-        "source": "results/figure1_sauter_validation.pdf",
-        "file_sha256": "19f4cb51bedcf09807da86617c5bcf3e8159889bed69967c0b1df8d07b6c57bd",
-        "drawing_stream_sha256": "ed64c868946de1646040f9e0547fe262bbcb00f15cf37f816198ee74d0e1bd99",
-        "pdf_page": 4,
-        "matches_embedded_drawing": true
-      },
-      {
-        "source": "results/figure2_double_pulse.pdf",
-        "file_sha256": "b9fb48854dbfc1fb6ec41198245a6abbbd3a531290278eabc1f8ff8f5f688b2c",
-        "drawing_stream_sha256": "c52f5843968c5129684951dcbbee026350e82758f239d7f6faa80282c5238605",
-        "pdf_page": 4,
-        "matches_embedded_drawing": true
-      },
-      {
-        "source": "results/figure3_qke_invariant.pdf",
-        "file_sha256": "37791f27002e46063e76e55f3476571ccf7f4ff1435c4ffe81347f2d04dbfcb5",
-        "drawing_stream_sha256": "9af58148f51bebe0b1d46aaf66f016a9a47bd8d3e29767ef26a857dde2714073",
-        "pdf_page": 5,
-        "matches_embedded_drawing": true
-      },
-      {
-        "source": "results/figure4_reproducibility_structure.pdf",
-        "file_sha256": "54419a3f78623ed522c47838e403913a49957de11a998864a2a6dfa7a3d9d93e",
-        "drawing_stream_sha256": "018035161b04835483c6236c5a4539c8f42a4c02266c75937aff970ec70ccdd4",
-        "pdf_page": 6,
-        "matches_embedded_drawing": true
-      },
-      {
-        "source": "results/figure5_computational_workflow.pdf",
-        "file_sha256": "aaede42c5d4f731ac7fe7ec25f17ffa60be6f2d253e2715d2e0f536095032449",
-        "drawing_stream_sha256": "6bb4d47cbe518d6cd2ec74c8112db33417c2f677fb3827bce20f6e3a97ec4fa0",
-        "pdf_page": 7,
-        "matches_embedded_drawing": true
-      },
-      {
-        "source": "results/figure6_sauter_window_error_map.pdf",
-        "file_sha256": "1f3427892d1f57bac3aa8ac303b84ba388c9ff451093771e1ba764a62e9da77e",
-        "drawing_stream_sha256": "8c3bba02c25f20daf33f8f712a34c6775b1bd84bd91476e1f0b0b94d5df8dd15",
-        "pdf_page": 8,
-        "matches_embedded_drawing": true
-      }
-    ]
-  }
+  "reference_keys_and_citations": {
+    "references": 30,
+    "all_cited": true,
+    "missing_keys": 0
+  },
+  "repository_hyperlink_pages": [
+    2,
+    9
+  ]
 }

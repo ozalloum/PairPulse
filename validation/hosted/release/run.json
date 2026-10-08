@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "run_id": "37856585568",
+  "url": "https://github.com/ozalloum/PairPulse/actions/runs/37856585568",
+  "tested_commit": "cf790b28c9ed5f50498f02703cb33ea834fecca9",
+  "payload_sha256": "e061b8bfa06da9d84ab9bcfac17ee1ca1034fbd196b93a469ef85e8c1c9377f3",
+  "tests_per_environment": 8,
+  "environments": [
+    "release-proof-ubuntu-latest-3.10",
+    "release-proof-ubuntu-latest-3.12",
+    "release-proof-windows-latest-3.12"
+  ],
+  "notebook_cells_per_reproduction_environment": 4,
+  "notebook_error_outputs": 0
+}

@@ -106,3 +106,52 @@ The manuscript was rebuilt with the same CAS template and updated figures.
 Current source and PDF hashes and figure checks are recorded in
 [manuscript_rebuild.json](manuscript_rebuild.json). The numerical code and
 result files were unchanged in this availability update.
+
+## Scientific/editorial audit and figure typography
+
+On 6 October 2026 the manuscript wording, captions, references and typography
+were audited. Ordinary plot titles were moved into captions, Figure 4 box text
+was enlarged, and the Figure 5 generator was synchronized with the portrait
+workflow. The new redraw script uses the archived CSVs. All numerical source
+files and five CSVs remain byte-identical to the pre-audit snapshot.
+
+All four tests and both complete reproduction scripts passed. Each of the four
+notebook code cells executed sequentially with the Agg backend; no Jupyter
+kernel or Colab session was tested. pip installation could not be verified
+because local temporary-file writes were denied. Numerical comparison and
+environment details are in audit_validation.json. These checks supersede the
+earlier notebook-execution status above but do not constitute broader validation.
+
+The PDF was compiled with the existing multi-file MiKTeX/CAS build environment
+after the built-in compiler failed to locate its platform directories. Current
+build metadata are in manuscript_rebuild.json. Author queries deliberately
+remain in the manuscript. No publication or journal submission was performed
+as part of this audit.
+
+## Author-confirmed contributions
+
+On 7 October 2026, Othman H. Y. Zalloum confirmed that he carried out all aspects
+of the work. The manuscript now records the applicable CRediT roles and removes
+the contribution query. Three manuscript queries remain: numerical validation,
+comparison with existing software, and an immutable public release. The PDF and
+local archives were refreshed. No numerical results or other factual declarations
+were changed by this contribution update.
+
+
+## Validation revision, 9 October 2026
+
+PairPulse version 0.2.0 exposes the existing step-cap coefficient as a public
+argument (default unchanged at 0.18), rejects nonfinite/invalid controls, and
+adds eight regression tests and a 2,228-evaluation validation protocol. The
+original five numerical CSVs remain unchanged. New results are retained under
+`validation/`; the manuscript incorporates these measured results and removes
+all author-action notes as requested. Local wheel-installation tests pass for
+both the minimum and reproduction dependency environments. Source-build and
+kernel-permission failures are recorded separately and are not counted as passes.
+
+Hosted run 37854584448 at commit 9cc8e8524e3b71a4c57b15d2c9d7843adb479636
+subsequently passed clean source installation and all four notebook code cells
+on Linux and Windows. Its four-test checks precede the expanded eight-test
+release check. Hosted execution records are retained under validation/hosted/.
+Earlier statements that author queries remain describe earlier snapshots;
+the v0.2.0 manuscript contains no author-action notes.
