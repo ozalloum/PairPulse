@@ -1,0 +1,150 @@
+name: Verify and publish PairPulse v0.2.0
+on:
+  push:
+    branches: [release-validation]
+    paths: [release-payload.zip, .github/workflows/publish-validation.yml]
+permissions:
+  contents: read
+concurrency:
+  group: pairpulse-v020-publication
+  cancel-in-progress: false
+env:
+  PAYLOAD_SHA256: e061b8bfa06da9d84ab9bcfac17ee1ca1034fbd196b93a469ef85e8c1c9377f3
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+            mode: minimum
+          - os: ubuntu-latest
+            python: '3.12'
+            mode: reproduction
+          - os: windows-latest
+            python: '3.12'
+            mode: reproduction
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify and unpack reviewed snapshot
+        run: |
+          python -c "import hashlib,os;from pathlib import Path;assert hashlib.sha256(Path('release-payload.zip').read_bytes()).hexdigest()==os.environ['PAYLOAD_SHA256']"
+          python -m zipfile -e release-payload.zip .
+          python scripts/verify_checksums.py
+          mkdir -p proof
+      - name: Clean source installation
+        run: |
+          if [ '${{ matrix.mode }}' = minimum ]; then
+            python -m pip install 'numpy==1.24.0' 'scipy==1.10.0' 'matplotlib==3.7.0' . 2>&1 | tee proof/install.log
+          else
+            python -m pip install -r requirements-validation.txt . 2>&1 | tee proof/install.log
+          fi
+          python -m pip check 2>&1 | tee proof/dependency-check.log
+          python -m pip freeze > proof/requirements.txt
+          python -c "import sys,platform,json,pairpulse;from pathlib import Path;Path('proof/environment.json').write_text(json.dumps({'python':sys.version,'platform':platform.platform(),'package_path':pairpulse.__file__},indent=2))"
+      - name: Run all eight regression tests
+        run: python -m unittest discover -s tests -v 2>&1 | tee proof/tests.log
+      - name: Execute notebook in a real kernel
+        if: matrix.mode == 'reproduction'
+        run: python scripts/execute_notebook.py --output proof 2>&1 | tee proof/kernel.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-proof-${{ matrix.os }}-${{ matrix.python }}
+          path: proof/
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore verified snapshot
+        run: |
+          python -c "import hashlib,os;from pathlib import Path;assert hashlib.sha256(Path('release-payload.zip').read_bytes()).hexdigest()==os.environ['PAYLOAD_SHA256']"
+          python -m zipfile -e release-payload.zip .
+          python scripts/verify_checksums.py
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = 06664393418838c9bf66c305f12ef7eac9df377c
+          git merge-base --is-ancestor origin/main HEAD
+          git rm -f --ignore-unmatch release-payload.zip .github/workflows/publish-validation.yml
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-proof-*
+          path: validation/hosted/release
+      - name: Record evidence and package final files
+        env:
+          VERIFIED_COMMIT: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os,json,hashlib,zipfile,subprocess,re
+          root=Path('.')
+          proof=root/'validation/hosted/release'
+          dirs=sorted(p for p in proof.iterdir() if p.is_dir())
+          assert len(dirs)==3
+          for p in dirs:
+              text=(p/'tests.log').read_text()
+              assert re.search(r'Ran 8 tests',text) and re.search(r'^OK$',text,re.M)
+              if '3.12' in p.name:
+                  d=json.loads((p/'notebook_execution.json').read_text())
+                  assert d['status']=='passed' and d['actual_kernel'] and d['code_cells']==4 and not d['error_outputs']
+                  assert hashlib.sha256((p/'PairPulse_reproduction_executed.ipynb').read_bytes()).hexdigest()==d['executed_sha256']
+                  assert hashlib.sha256((root/'notebooks/PairPulse_reproduction.ipynb').read_bytes()).hexdigest()==d['source_sha256']
+          assert json.loads((root/'validation/summary.json').read_text())['criteria_passed']
+          assert not re.search(r'authorquery|AUTHOR ACTION REQUIRED', (root/'manuscript/pairpulse.tex').read_text(),re.I)
+          run={'status':'passed','run_id':os.environ['GITHUB_RUN_ID'],'url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'tested_commit':os.environ['VERIFIED_COMMIT'],'payload_sha256':os.environ['PAYLOAD_SHA256'],'tests_per_environment':8,'environments':[p.name for p in dirs],'notebook_cells_per_reproduction_environment':4,'notebook_error_outputs':0}
+          (proof/'run.json').write_text(json.dumps(run,indent=2)+'\n')
+          p=root/'docs/release_validation.json'; d=json.loads(p.read_text()); d['hosted_release_validation']=run;p.write_text(json.dumps(d,indent=2)+'\n')
+          files=sorted(p for p in root.rglob('*') if p.is_file() and not any(x in {'.git','build','__pycache__','proof','release-assets','workers'} or x.endswith('.egg-info') for x in p.parts) and p.name not in {'CHECKSUMS.sha256','release-payload.zip'} and p.suffix not in {'.pyc','.aux','.out','.fls'})
+          manifest=''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.as_posix()+'\n' for p in files)
+          (root/'CHECKSUMS.sha256').write_text(manifest)
+          files.append(root/'CHECKSUMS.sha256')
+          subprocess.run(['git','add','-f','--']+[str(p) for p in files],check=True)
+          out=root/'release-assets';out.mkdir()
+          archive=out/'PairPulse_validated_submission_v0.2.0.zip'
+          with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
+              for p in files:z.write(p,'PairPulse/'+p.as_posix())
+          (out/'SHA256SUMS.txt').write_text(hashlib.sha256(archive.read_bytes()).hexdigest()+'  '+archive.name+'\n'+hashlib.sha256((root/'manuscript/pairpulse.pdf').read_bytes()).hexdigest()+'  pairpulse.pdf\n')
+          PY
+          python scripts/verify_checksums.py
+      - name: Commit verified files and create release tag
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish validated PairPulse v0.2.0 manuscript, code, and data'
+          git push origin HEAD:main
+          git tag -a v0.2.0 -m 'Validated PairPulse submission snapshot v0.2.0'
+          git push origin v0.2.0
+      - name: Publish immutable release with reviewed assets
+        run: |
+          cat > /tmp/pairpulse-release-notes.md <<'EOF'
+          Validated manuscript, code, and data snapshot for PairPulse.
+
+          - All author-action notes removed; revised manuscript PDF and LaTeX included.
+          - 2,228 mode evaluations with no failed integrations; all declared numerical criteria pass.
+          - QuTiP 5.2.2 comparison, Sauter parameter checks, Gaussian test, and separate integration/window/grid/domain refinements retained.
+          - Eight regression tests pass in three clean hosted installations; real notebook-kernel execution passes on Linux and Windows. Executed notebooks, hashes, dependencies, and logs are included.
+          - Original five CSV datasets preserved. SHA-256 checksums identify this snapshot. No archival DOI is claimed.
+
+          Download PairPulse_validated_submission_v0.2.0.zip for the complete submission package, or pairpulse.pdf for the manuscript. This publication does not submit anything to a journal.
+          EOF
+          gh release create v0.2.0 --verify-tag --draft --title 'PairPulse v0.2.0 - validated submission snapshot' --notes-file /tmp/pairpulse-release-notes.md release-assets/PairPulse_validated_submission_v0.2.0.zip release-assets/SHA256SUMS.txt manuscript/pairpulse.pdf
+          gh release edit v0.2.0 --draft=false --latest
+          gh api repos/ozalloum/PairPulse/releases/tags/v0.2.0 --jq '{url:.html_url,tag:.tag_name,immutable:.immutable,draft:.draft,assets:[.assets[].name]}'
+          test "$(gh api repos/ozalloum/PairPulse/releases/tags/v0.2.0 --jq .immutable)" = true
