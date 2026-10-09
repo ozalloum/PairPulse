@@ -60,8 +60,7 @@ def make_structure_figure(output: Path, project_root: Path) -> None:
         "src/pairpulse/pulses.py", "src/pairpulse/solvers.py",
         "tests/test_pairpulse.py", "notebooks/PairPulse_reproduction.ipynb",
         "scripts/reproduce.py", "scripts/make_reproducibility_figures.py",
-        "scripts/build_manuscript.sh", "results/run_metadata.json",
-        "results/tail_convergence.csv", "manuscript/pairpulse.tex",
+        "scripts/build_manuscript.sh", "manuscript/pairpulse.tex",
         "manuscript/pairpulse.pdf", "README.md", "pyproject.toml",
         "LICENSE", "CHECKSUMS.sha256",
     )
@@ -98,7 +97,7 @@ def make_structure_figure(output: Path, project_root: Path) -> None:
         (0.350, TEAL, "Scripts and\noutputs",
          "scripts/reproduce.py\n  Spectra, yields, diagnostics\n\n"
          "scripts/\nmake_reproducibility_figures.py\n  Diagrams and error map\n\n"
-         "results/\n  CSV data, JSON metadata\n  Figures: PDF and PNG"),
+         "results/\n  Figures: PDF and PNG\nGenerated: CSV, JSON"),
         (0.685, GOLD, "Manuscript and\nrelease",
          "manuscript/\n  pairpulse.tex\n  pairpulse.pdf\n  CAS class, styles, assets\n\n"
          "scripts/build_manuscript.sh\n\nCHECKSUMS.sha256\nSUBMISSION_NOTES.md"),
@@ -121,7 +120,7 @@ def make_structure_figure(output: Path, project_root: Path) -> None:
     ax.text(0.5, 0.11, "Rebuild: Python scripts → CAS PDF → checksum verification",
             ha="center", va="center", fontsize=10.5, color=INK,
             fontweight="semibold", transform=ax.transAxes)
-    ax.text(0.5, 0.05, "Datasets and figures are distributed with their generating code.",
+    ax.text(0.5, 0.05, "Included scripts generate numerical datasets and figures.",
             ha="center", va="center", fontsize=10, color=MUTED, transform=ax.transAxes)
     fig.savefig(output / "figure4_reproducibility_structure.pdf")
     fig.savefig(output / "figure4_reproducibility_structure.png", dpi=300)

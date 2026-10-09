@@ -49,7 +49,7 @@
 \cortext[1]{Corresponding author}
 
 \begin{abstract}
-We present \PairPulse, a reproducible computational program for momentum-resolved fermion pair production in prescribed, spatially homogeneous electric fields in one spatial dimension. For each canonical momentum, it independently evolves a two-component Dirac mode and the equivalent non-Markovian quantum-kinetic system. The exact asymptotic occupation for a temporal Sauter pulse supplies an external benchmark, while the Dirac norm and quantum-kinetic Bloch-vector invariant provide independent integration diagnostics. The program supports superpositions of temporally displaced Sauter pulses and user-defined pulse objects through a compact field--potential interface. For $E_0/m^2=0.3$ and $m\tau=2$, both solvers reproduce the analytic occupation on 41 momentum points with maximum absolute error below $8\times10^{-13}$. A supplementary suite of 2,228 mode evaluations separates integration, endpoint and momentum-grid errors. Nine Sauter parameter pairs give maximum absolute occupation error $4.58\times10^{-15}$ at refined settings, and comparison with QuTiP 5.2.2 gives differences below $8.27\times10^{-16}$ for the single- and double-pulse spectra. Momentum-grid and domain refinements meet a declared $10^{-4}$ relative density criterion. A momentum--window map shows the absolute finite-window discrepancy across the benchmark grid. A separated two-pulse calculation demonstrates the workflow for a field for which the package supplies no closed-form spectrum. The contribution is a transparent reference implementation with tests, data, and figure-generation scripts; no new pair-production mechanism or analytic result is claimed.
+We present \PairPulse, a reproducible computational program for momentum-resolved fermion pair production in prescribed, spatially homogeneous electric fields in one spatial dimension. For each canonical momentum, it independently evolves a two-component Dirac mode and the equivalent non-Markovian quantum-kinetic system. The exact asymptotic occupation for a temporal Sauter pulse supplies an external benchmark, while the Dirac norm and quantum-kinetic Bloch-vector invariant provide independent integration diagnostics. The program supports superpositions of temporally displaced Sauter pulses and user-defined pulse objects through a compact field--potential interface. For $E_0/m^2=0.3$ and $m\tau=2$, both solvers reproduce the analytic occupation on 41 momentum points with maximum absolute error below $8\times10^{-13}$. The reported validation studies comprise 1,962 mode evaluations that separate integration, endpoint and momentum-grid errors and assess parameter and pulse-profile changes. Nine Sauter parameter pairs give maximum absolute occupation error $4.58\times10^{-15}$ at refined settings. Momentum-grid and domain refinements meet a declared $10^{-4}$ relative density criterion. A momentum--window map shows the absolute finite-window discrepancy across the benchmark grid. A separated two-pulse calculation demonstrates the workflow for a field for which the package supplies no closed-form spectrum. The contribution is a transparent reference implementation with tests and data- and figure-generation scripts; no new pair-production mechanism or analytic result is claimed.
 \end{abstract}
 
 \begin{highlights}
@@ -57,7 +57,7 @@ We present \PairPulse, a reproducible computational program for momentum-resolve
 \item Benchmarks both solvers against the exact temporal-Sauter spectrum.
 \item Reports norm, invariant, pulse-tail, and cross-formulation diagnostics.
 \item Maps absolute finite-window error over momentum and tail extent.
-\item Includes tested code, reproducible data, figures, and a notebook.
+\item Includes tested code, reproduction scripts, figures, and a notebook.
 \end{highlights}
 
 \begin{keywords}
@@ -86,12 +86,10 @@ Nonperturbative pair creation by electric fields is a foundational prediction of
 
 For pulsed fields, the final momentum spectrum depends on the full time history of the background. Non-Markovian quantum-kinetic calculations have been compared with scattering and effective-action approaches, and the temporal Sauter field provides an especially useful exact reference case \cite{Hebenstreit2008,Schutzhold2008,Dumlu2009,Hebenstreit2010,Fedotov2011,Huet2014}. Short pulses and subcycle structure produce characteristic momentum signatures, while semiclassical turning-point analyses explain interference patterns in time-dependent backgrounds \cite{Hebenstreit2009,DumluDunne2010,DumluDunne2011a,DumluDunne2011b,Akkermans2012,Li2014}. These studies make clear why a numerical implementation should specify its in/out convention, integration window, and momentum variable rather than report a spectrum without those choices.
 
-Several complementary computational approaches address broader field configurations and observables. Reviews summarize the strong-field and quantum-kinetic setting; real-time lattice simulations treat dynamical fermion production; and later work examines pulse-shape effects, spatially varying fields, and the validity of the spatially uniform approximation \cite{DiPiazza2012,Hebenstreit2013,GelisTanji2016,Aleksandrov2016,Aleksandrov2017a,Aleksandrov2017b,Lv2018,Aleksandrov2018}. The definition of particle number during a field pulse also depends on the chosen basis, a point clarified by analyses of adiabatic particle number \cite{Ilderton2022}. This motivates a narrowly specified benchmark calculation rather than an unqualified claim of general applicability.
-
-This paper introduces \PairPulse, a compact computational-physics program that evolves two independently represented mode systems under the same prescribed field: a two-component Dirac spinor and the non-Markovian quantum-kinetic variables. The exact asymptotic Sauter spectrum provides an external benchmark; conservation diagnostics test each integration internally; and a two-pulse example checks cross-formulation agreement beyond the exactly soluble case. The package includes the source, automated tests, a reproduction notebook, generated figures, machine-readable data, and run metadata. It is intended as a transparent reference implementation for method checks and modest parameter studies in the spatially homogeneous model, and it does not claim new pair-production physics.
+This paper introduces \PairPulse, a compact computational-physics program that evolves two independently represented mode systems under the same prescribed field: a two-component Dirac spinor and the non-Markovian quantum-kinetic variables. The exact asymptotic Sauter spectrum provides an external benchmark; conservation diagnostics test each integration internally; and a two-pulse example checks cross-formulation agreement beyond the exactly soluble case. The package includes the source, automated tests, a reproduction notebook, and generated figures. Its scripts generate machine-readable data and run metadata. It is intended as a transparent reference implementation for method checks and modest parameter studies in the spatially homogeneous model, and it does not claim new pair-production physics.
 
 
-Existing software provides useful comparisons. The RODARE release of Edwards et al.\ \cite{EdwardsSoftware2025} supplies MATLAB code and datasets for hierarchy-expanded relativistic quantum-kinetic calculations in time-dependent fields. Its documented aim is to resolve contributions in assisted pair production. QuTiP is a general quantum-dynamics framework with time-dependent Hamiltonian solvers \cite{Lambert2026}. PairPulse packages a narrower workflow: paired Dirac and full auxiliary-variable kinetic evolution, a common in/out convention, an exact Sauter benchmark, conservation diagnostics, and reproducible spectra and density checks. This integration is its practical contribution; no claim of software priority or superiority over the wider capabilities of these packages is made. The RODARE comparison concerns documented scope, whereas QuTiP 5.2.2 is executed as a separate numerical comparator below.
+PairPulse's software contribution is the integration of paired Dirac and full auxiliary-variable kinetic evolution, a common in/out convention, an exact Sauter benchmark, conservation diagnostics, and reproducible spectra and density checks in a single computational workflow. This design allows users to check a calculation across formulations and to assess integration, endpoint, and momentum-discretization errors separately.
 
 The remainder of the paper defines the field and mode conventions, describes the software and numerical method, reports validation results, and states the scope and limitations of the program.
 
@@ -164,9 +162,9 @@ The spin-summed distribution in Ref.~\cite{Hebenstreit2010}, Eq.~(99), is twice 
 
 Both initial-value problems use SciPy's DOP853 solver through \texttt{solve\_ivp}. The default relative and absolute tolerances are $2\times10^{-10}$ and $2\times10^{-12}$. The integration window extends 12 duration parameters beyond the outermost pulse centers by default. For each mode, 257 equally spaced times in $[t_i,t_f]$ are used to estimate $\omega_{\max}=\max\sqrt{m^2+[p-qA(t)]^2}$, and the maximum internal step is $c_h/\omega_{\max}$, where the public parameter \texttt{max\_step\_coefficient} defaults to $c_h=0.18$. This sampled cap is empirical; it is not a rigorous frequency bound for an arbitrary user-defined pulse. The window length is user-adjustable; the manuscript's tail study makes its effect explicit. The same time interval, DOP853 implementation, tolerances, and step-cap rule are used for both formulations. Thus the state equations are implemented independently, but their time integrator is shared. Agreement between them does not by itself exclude common integration or window errors. Custom pulse objects must supply mutually consistent $E(t)$ and $A(t)$ with sufficiently decayed endpoint fields; the interface does not check these conditions automatically.
 
-For a single Sauter pulse, \PairPulse{} reports the exact occupation, direct Dirac occupation, quantum-kinetic occupation, final-time norm/invariant errors, and ODE function-evaluation counts. These diagnostics are not maxima over the intermediate time history. The two reproduction scripts regenerate the six manuscript figures, comma-separated tables, and environment metadata. The additional \texttt{redraw\_figures.py} script redraws the figures directly from the archived CSVs without new mode integrations. The accompanying notebook shows the central benchmark and pulse-train example. The eight tests cover the exact benchmark, the quantum-kinetic invariant and occupation bounds, the zero-field limit, pulse superposition, time translation, step-cap refinement, and rejection of invalid controls or nonfinite pulse parameters.
+For a single Sauter pulse, \PairPulse{} reports the exact occupation, direct Dirac occupation, quantum-kinetic occupation, final-time norm/invariant errors, and ODE function-evaluation counts. These diagnostics are not maxima over the intermediate time history. The two reproduction scripts regenerate the six manuscript figures, comma-separated tables, and environment metadata. The additional \texttt{redraw\_figures.py} script redraws the figures from CSVs generated by the reproduction scripts without repeating mode integrations. The accompanying notebook shows the central benchmark and pulse-train example. The eight tests cover the exact benchmark, the quantum-kinetic invariant and occupation bounds, the zero-field limit, pulse superposition, time translation, step-cap refinement, and rejection of invalid controls or nonfinite pulse parameters.
 
-Figures~\ref{fig:package} and \ref{fig:workflow} summarize the public package contents and the sequence used to regenerate its datasets and publication figures. Both diagrams are generated by the included Python plotting script. The separate finite-window scan writes its underlying momentum--tail-extent values to a CSV file, in addition to the spectra, convergence data, and run metadata produced by the main reproduction script.
+Figures~\ref{fig:package} and \ref{fig:workflow} summarize the software organization, generated outputs, and the sequence used to regenerate datasets and publication figures. Both diagrams are generated by the included Python plotting script. The separate finite-window scan writes its underlying momentum--tail-extent values to a CSV file, in addition to the spectra, convergence data, and run metadata produced by the main reproduction script.
 
 The one-dimensional momentum-integrated density is defined as
 \begin{equation}
@@ -240,14 +238,14 @@ Here $L$ is the half-width from the pulse center to either integration endpoint.
 
 \begin{figure*}[pos=tp]
   \centering
-  \includegraphics[width=\textwidth]{figure4_reproducibility_structure.pdf}
-  \caption{Structure of the public \PairPulse{} package. Source modules, tests, notebook, and run scripts are shown alongside the generated datasets, figures, manuscript, and release checks. The diagram is produced in Python from the package's declared file structure.}
+  \includegraphics[width=0.82\textwidth]{figure4_reproducibility_structure.pdf}
+  \caption{Organization of \PairPulse{} and its generated outputs. Source modules, tests, notebook, and run scripts are shown alongside the generated datasets, figures, manuscript, and release checks. The diagram is produced in Python from the package's declared file structure.}
   \label{fig:package}
 \end{figure*}
 
 \begin{figure*}[pos=tp]
   \centering
-  \includegraphics[width=\textwidth]{figure5_computational_workflow.pdf}
+  \includegraphics[width=0.65\textwidth]{figure5_computational_workflow.pdf}
   \caption{Computational workflow used to generate the reproducibility datasets and publication figures. Each momentum mode is evolved independently with the Dirac and quantum-kinetic systems; the exact Sauter result and conservation diagnostics are then used where applicable before data export, plotting, and manuscript compilation.}
   \label{fig:workflow}
 \end{figure*}
@@ -255,7 +253,7 @@ Here $L$ is the half-width from the pulse center to either integration endpoint.
 \begin{figure*}[pos=tp]
   \centering
   \includegraphics[width=0.94\textwidth]{figure6_sauter_window_error_map.pdf}
-  \caption{Absolute finite-window discrepancy $|f_p(L)-f_p^{\mathrm{exact}}|$ from the asymptotic Sauter benchmark: (a) Dirac modes and (b) quantum-kinetic modes, for $E_0=0.3$, $\tau=2$, $t_c=0$, and $m=q=1$. Each panel contains 41 momenta in $[-1.5,1.5]$ and six half-widths $L/\tau=4,6,8,10,12,14$; integration endpoints are $t_c\pm L$. The common logarithmic color scale uses a display floor of $10^{-16}$ without changing the archived errors. Discrepancies include window, integration, and roundoff effects at fixed tolerances. The horizontal coordinate is canonical momentum, not position.}
+  \caption{Absolute finite-window discrepancy $|f_p(L)-f_p^{\mathrm{exact}}|$ from the asymptotic Sauter benchmark: (a) Dirac modes and (b) quantum-kinetic modes, for $E_0=0.3$, $\tau=2$, $t_c=0$, and $m=q=1$. Each panel contains 41 momenta in $[-1.5,1.5]$ and six half-widths $L/\tau=4,6,8,10,12,14$; integration endpoints are $t_c\pm L$. The common logarithmic color scale uses a display floor of $10^{-16}$ without changing the computed errors. Discrepancies include window, integration, and roundoff effects at fixed tolerances. The horizontal coordinate is canonical momentum, not position.}
   \label{fig:window-error}
 \end{figure*}
 
@@ -263,7 +261,7 @@ Here $L$ is the half-width from the pulse center to either integration endpoint.
 \subsection{Validation protocol and integration refinement}
 \label{sec:refinement}
 
-A supplementary validation suite contains 2,228 individual mode evaluations, all completed without integration failures. The protocol was recorded before execution. Its acceptance criteria are occupation differences below $10^{-10}$, relative errors below $10^{-5}$ when the exact occupation is at least $10^{-10}$, successive relative changes below $10^{-4}$ for the integrated density, and no occupation outside $[0,1]$ by more than $10^{-10}$. These are empirical acceptance criteria, not certified error bounds. Every mode, solver setting, diagnostic and failure field is retained in \path{validation/mode_results.csv}; the scripts retain unsuccessful integrations rather than silently discarding them.
+The validation studies reported here comprise 1,962 individual mode evaluations, all completed without integration failures. The protocol was recorded before execution. Its acceptance criteria are occupation differences below $10^{-10}$, relative errors below $10^{-5}$ when the exact occupation is at least $10^{-10}$, successive relative changes below $10^{-4}$ for the integrated density, and no occupation outside $[0,1]$ by more than $10^{-10}$. These are empirical acceptance criteria, not certified error bounds. The scripts retain unsuccessful integrations rather than silently discarding them.
 
 At fixed tail extent 20, each of the single- and double-pulse cases is tested at $p=0$, $p=\pm0.75$ and $p=\pm1.5$. The relative tolerance takes values $2\times10^{-8}$, $2\times10^{-10}$ and $2\times10^{-12}$, with absolute tolerance one hundredth as large; independently, $c_h$ takes values 0.18, 0.09 and 0.045. Both formulations are run at all combinations (180 evaluations). The largest occupation difference from the same formulation at the tightest tolerance and cap is $8.46\times10^{-14}$. Refinement differences need not decrease monotonically once errors approach floating-point precision. The refined double-pulse solution is a numerical reference, not an exact solution.
 
@@ -296,24 +294,7 @@ A user-defined Gaussian profile provides an additional interface check:
 E(t)&=0.3\exp[-(t/2)^2],\nonumber\\
 A(t)&=-0.3\sqrt{\pi}\,\operatorname{erf}(t/2).
 \end{align}
-These expressions satisfy $E=-\dot A$. Five momenta, two endpoint extents ($|t|=12,16$), two cap coefficients (0.09, 0.045) and three solvers give 60 evaluations. Differences from the longest-window, smallest-cap QuTiP result are below $3.53\times10^{-17}$. This checks one smooth custom profile and does not validate arbitrary user-supplied fields.
-
-\subsection{Comparison with QuTiP}
-
-QuTiP 5.2.2 \cite{Lambert2026} evolves the two-level Hamiltonian in Eq.~\eqref{eq:dirac} using \texttt{sesolve} with the \texttt{vern9} integrator. Its endpoint eigensystems and state evolution are constructed independently of PairPulse's right-hand side and eigenvector helper. The analytic potential, physical conventions and endpoint times are shared. Automatic output normalization is disabled so that norm drift remains observable. The run uses tail extent 20, relative tolerance $2\times10^{-12}$, absolute tolerance $2\times10^{-14}$ and $c_h=0.09$ on the same 41 momenta as each original spectrum, giving 246 evaluations across the three solvers.
-
-\begin{table}[pos=htbp]
-\centering\small
-\caption{Largest absolute occupation difference from QuTiP on 41 modes per case. These compare refined runs, not the original default-setting curves.}
-\label{tab:software}
-\begin{tabular}{lrr}\toprule
-Case & Dirac--QuTiP & QKE--QuTiP\\\midrule
-Single pulse & $1.09\times10^{-16}$ & $9.06\times10^{-17}$\\
-Double pulse & $8.27\times10^{-16}$ & $4.11\times10^{-16}$\\
-\bottomrule\end{tabular}
-\end{table}
-
-For the single pulse, QuTiP's maximum absolute error against the analytic result is $1.04\times10^{-16}$. Table~\ref{tab:software} supplies an executed comparison using a different integration implementation. The shared field specification remains a common assumption. No matched-accuracy runtime comparison is claimed: wall times retained from concurrent validation workers are execution records, not controlled performance benchmarks.
+These expressions satisfy $E=-\dot A$. Five momenta ($p=0,\pm0.75,\pm1.5$), two endpoint extents ($|t|=12,16$), two cap coefficients (0.09, 0.045) and the two PairPulse solvers give 40 evaluations at relative tolerance $2\times10^{-12}$. The largest absolute difference between Dirac and quantum-kinetic occupations at matching settings is $1.31\times10^{-17}$. This checks cross-formulation agreement for one smooth custom profile; it does not establish absolute accuracy or validate arbitrary user-supplied fields.
 
 \subsection{Momentum-grid and domain refinement}
 \label{sec:densityvalidation}
@@ -341,30 +322,29 @@ Double & 1.8 & 41 & $1.6919881473\times10^{-3}$\\
 
 The last fixed-domain grid refinement changes the single- and double-pulse densities by $3.43\times10^{-7}$ and $1.44\times10^{-6}$ relatively. The final domain extension changes them by $7.20\times10^{-13}$ and $1.21\times10^{-9}$, respectively. The largest difference between the QKE and analytic single-pulse densities on identical grids is below $1.71\times10^{-18}$. A further 486 mode evaluations on 81-node grids vary tail extents (12, 16, 20) and halve the cap coefficient at extent 20; the largest relative density change is $4.98\times10^{-11}$. The density checks therefore meet the declared $10^{-4}$ criterion, while remaining finite refinement evidence rather than a rigorous continuum error estimate.
 
-\subsection{Installation and execution records}
+\subsection{Installation and notebook execution}
 
-The numerical suite was executed on 8 October 2026 with Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0 and QuTiP 5.2.2. Machine and dependency metadata accompany the data. A built wheel was installed into two isolated Windows environments: Python 3.12.14 with the reproduction libraries, and Python 3.10.20 with NumPy 1.24.0, SciPy 1.10.0 and Matplotlib 3.7.0. All eight tests passed in both environments. Separate hosted checks successfully built and installed the package from source on Linux and Windows. On both systems, the notebook executed all four code cells in a real Jupyter kernel, imported the installed package, and produced no error outputs. Execution records identify the tested revisions, dependencies and notebook hashes; the earlier restricted local Windows kernel failure is retained separately.
+The reported numerical studies were executed on 8 October 2026 with Python 3.12.14, NumPy 2.3.5 and SciPy 1.17.0. A built wheel was installed into two isolated Windows environments: Python 3.12.14 with the reproduction libraries, and Python 3.10.20 with NumPy 1.24.0, SciPy 1.10.0 and Matplotlib 3.7.0. All eight tests passed in both environments. Separate hosted checks successfully built and installed the package from source on Linux and Windows. On both systems, the notebook executed all four code cells in a real Jupyter kernel, imported the installed package, and produced no error outputs.
 
-\FloatBarrier
 \section{Limitations and intended use}
 
-The implementation assumes a prescribed, spatially homogeneous background and one spatial dimension. It does not include back-reaction, collisions, spatial gradients, transverse momentum, scalar particles, or a self-consistent electromagnetic field. This restriction is physically consequential: calculations beyond the dipole or spatially uniform approximation show that field variation can change pair yields and momentum spectra \cite{Aleksandrov2016,Aleksandrov2017b,Lv2018,Aleksandrov2018}. \PairPulse{} is therefore a reference implementation for the stated homogeneous model, not a substitute for lattice, Wigner, or spatially resolved calculations when these effects matter.
+The implementation assumes a prescribed, spatially homogeneous background and one spatial dimension. It does not include back-reaction, collisions, spatial gradients, transverse momentum, scalar particles, or a self-consistent electromagnetic field. \PairPulse{} is intended for calculations within these stated physical assumptions.
 
-The exact Sauter formula validates asymptotic occupation for a single pulse; it does not validate every user-supplied field. For new profiles, users should vary tolerances, pulse-tail windows, time-step limits, and momentum resolution, and compare physical observables with an independent method where possible. Particle-number interpretation during an active pulse requires particular care because instantaneous occupation can be basis dependent \cite{Ilderton2022}.
+The exact Sauter formula validates asymptotic occupation for a single pulse; it does not validate every user-supplied field. For new profiles, users should vary tolerances, pulse-tail windows, time-step limits, and momentum resolution, and compare physical observables with an independent method where possible. The reported occupations are evaluated at the specified finite integration endpoints.
 
-The supplementary studies separate integration controls, endpoint extent, momentum spacing and momentum range, and cover nine single-pulse parameter pairs plus a Gaussian profile. This finite set does not establish a parameter-independent accuracy bound. Very weak occupations, stronger or longer pulses, sharply structured custom fields and larger pulse trains require further checks.
+The studies in Section~4 separate integration controls, endpoint extent, momentum spacing and momentum range, and cover nine single-pulse parameter pairs plus a Gaussian profile. This finite set does not establish a parameter-independent accuracy bound. Very weak occupations, stronger or longer pulses, sharply structured custom fields and larger pulse trains require further checks.
 
 
 The code emphasizes clarity and cross-validation over throughput. Each momentum mode is integrated independently in Python, so the present package is most appropriate for reference calculations, method checks, and modest parameter sweeps. The validation script can distribute independent modes among subprocess workers. Compiled kernels and demonstrated scaling for large parameter scans remain outside the current assessment.
 
 \section{Conclusion}
 
-\PairPulse{} provides an inspectable implementation of two established formulations for fermion pair creation in homogeneous pulsed electric fields. The exact Sauter solution, norm and invariant diagnostics, pulse-tail data, separated-pulse example, and executable notebook make the numerical conventions reproducible. The two numerical formulations reproduce the exact benchmark to below $8\times10^{-13}$ absolute error for the stated parameter set and agree to about $1.2\times10^{-13}$ for the two-pulse example. The additional 2,228 evaluations separate integration and domain errors, cover nine Sauter parameter pairs, test a custom Gaussian pulse, and compare against QuTiP with a different integrator. All declared numerical criteria pass. These results validate the implementation for the tested cases; they do not establish a general accuracy guarantee or claim new pair-production physics.
+\PairPulse{} provides an inspectable implementation of two established formulations for fermion pair creation in homogeneous pulsed electric fields. The exact Sauter solution, norm and invariant diagnostics, pulse-tail data, separated-pulse example, and executable notebook make the numerical conventions reproducible. The two numerical formulations reproduce the exact benchmark to below $8\times10^{-13}$ absolute error for the stated parameter set and agree to about $1.2\times10^{-13}$ for the two-pulse example. The additional 1,962 evaluations reported here separate integration and domain errors, cover nine Sauter parameter pairs, and test cross-formulation agreement for a custom Gaussian pulse. All declared numerical criteria pass. These results validate the implementation for the tested cases; they do not establish a general accuracy guarantee or claim new pair-production physics.
 
 The deliberately limited model makes the package useful as a reference for homogeneous-field calculations and as a base for extensions. Applications involving spatial dependence, back-reaction, or additional particle degrees of freedom require further derivations and validation against appropriate independent methods.
 
 \section*{Code and data availability}
-The \PairPulse{} source code and numerical data supporting this study are available in the versioned snapshot v0.2.0 at \url{https://github.com/ozalloum/PairPulse/releases/tag/v0.2.0}. The release contains the Python solvers, unit tests, reproduction and figure-generation scripts, executable notebook, CSV data tables, generated figures, run metadata, and manuscript source and build files. Installation and reproduction instructions are provided in the repository README, and the data files and diagnostic conventions are described in \path{docs/DATA.md}. The PairPulse code is distributed under the MIT License; the bundled Elsevier CAS files retain their upstream license notices. A SHA-256 manifest identifies the distributed files. The release tag and associated commit identify this revision independently of subsequent changes to the main branch.
+The \PairPulse{} source code, reproduction scripts, notebook, manuscript, and generated figures are available in the versioned release v0.2.1 at \url{https://github.com/ozalloum/PairPulse/releases/tag/v0.2.1}. This release and the matching submission package do not include numerical validation records, CSV datasets, executed notebooks, or execution logs. The included scripts generate numerical datasets and diagnostics from fresh calculations; installation and reproduction instructions are provided in the repository README. The PairPulse code is distributed under the MIT License; the bundled Elsevier CAS files retain their upstream license notices. The release tag identifies the corresponding source commit, and SHA-256 manifests identify the distributed files. No archival DOI is claimed.
 
 \section*{CRediT authorship contribution statement}
 Othman H. Y. Zalloum: Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Resources, Data curation, Visualization, Project administration, Writing--original draft, Writing--review and editing.
@@ -381,6 +361,7 @@ The author declares that there are no known competing financial interests or per
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 ChatGPT (OpenAI) was used to assist with manuscript editing, literature and reference checks, source-code inspection, plotting-script revisions, reproducibility checks, and LaTeX formatting. The scientific plots were generated with Python from numerical calculations or archived data. The corresponding author is responsible for reviewing and verifying the scientific content, computations, references, and final text before submission.
 
+\FloatBarrier
 \begin{thebibliography}{99}
 \bibitem{EulerHeisenberg1936}
 W. Heisenberg and H. Euler, Folgerungen aus der Diracschen Theorie des Positrons, \textit{Zeitschrift f\"ur Physik} 98 (1936) 714--732. \url{https://doi.org/10.1007/BF01343663}.
@@ -445,37 +426,6 @@ E. Akkermans and G. V. Dunne, Ramsey fringes and time-domain multiple-slit inter
 \bibitem{Li2014}
 Z. L. Li, D. Lu, B. S. Xie, L. B. Fu, J. Liu, and B. F. Shen, Enhanced pair production in strong fields by multiple-slit interference effect with dynamically assisted Schwinger mechanism, \textit{Physical Review D} 89 (2014) 093011. \url{https://doi.org/10.1103/PhysRevD.89.093011}.
 
-\bibitem{DiPiazza2012}
-A. Di Piazza, C. M\"uller, K. Z. Hatsagortsyan, and C. H. Keitel, Extremely high-intensity laser interactions with fundamental quantum systems, \textit{Reviews of Modern Physics} 84 (2012) 1177. \url{https://doi.org/10.1103/RevModPhys.84.1177}.
-
-\bibitem{Hebenstreit2013}
-F. Hebenstreit, J. Berges, and D. Gelfand, Simulating fermion production in 1+1 dimensional QED, \textit{Physical Review D} 87 (2013) 105006. \url{https://doi.org/10.1103/PhysRevD.87.105006}.
-
-\bibitem{GelisTanji2016}
-F. Gelis and N. Tanji, Schwinger mechanism revisited, \textit{Progress in Particle and Nuclear Physics} 87 (2016) 1--49. \url{https://doi.org/10.1016/j.ppnp.2015.11.001}.
-
-\bibitem{Aleksandrov2016}
-I. A. Aleksandrov, G. Plunien, and V. M. Shabaev, Electron-positron pair production in external electric fields varying both in space and time, \textit{Physical Review D} 94 (2016) 065024. \url{https://doi.org/10.1103/PhysRevD.94.065024}.
-
-\bibitem{Aleksandrov2017a}
-I. A. Aleksandrov, G. Plunien, and V. M. Shabaev, Pulse shape effects on the electron-positron pair production in strong laser fields, \textit{Physical Review D} 95 (2017) 056013. \url{https://doi.org/10.1103/PhysRevD.95.056013}.
-
-\bibitem{Aleksandrov2017b}
-I. A. Aleksandrov, G. Plunien, and V. M. Shabaev, Momentum distribution of particles created in space-time-dependent colliding laser pulses, \textit{Physical Review D} 96 (2017) 076006. \url{https://doi.org/10.1103/PhysRevD.96.076006}.
-
-\bibitem{Lv2018}
-Q. Z. Lv, S. Dong, Y. T. Li, Z. M. Sheng, Q. Su, and R. Grobe, Role of the spatial inhomogeneity on the laser-induced vacuum decay, \textit{Physical Review A} 97 (2018) 022515. \url{https://doi.org/10.1103/PhysRevA.97.022515}.
-
-\bibitem{Aleksandrov2018}
-I. A. Aleksandrov, G. Plunien, and V. M. Shabaev, Dynamically assisted Schwinger effect beyond the spatially-uniform-field approximation, \textit{Physical Review D} 97 (2018) 116001. \url{https://doi.org/10.1103/PhysRevD.97.116001}.
-
-\bibitem{Ilderton2022}
-A. Ilderton, Physics of adiabatic particle number in the Schwinger effect, \textit{Physical Review D} 105 (2022) 016021. \url{https://doi.org/10.1103/PhysRevD.105.016021}.
-\bibitem{EdwardsSoftware2025}
-J. P. Edwards, N. Ahmadiniaz, S. M. Schmidt, and C. Kohlf\"urst, Data publication: Relativistic Quantum Kinetic Theory: Higher order contributions in assisted Schwinger pair production, RODARE, version 1.0 (2025). \url{https://doi.org/10.14278/rodare.3882}.
-
-\bibitem{Lambert2026}
-N. Lambert et al., QuTiP 5: The Quantum Toolbox in Python, \textit{Physics Reports} 1153 (2026) 1--62. \url{https://doi.org/10.1016/j.physrep.2025.10.001}.
 \end{thebibliography}
 
 \end{document}

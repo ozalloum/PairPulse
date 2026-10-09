@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pairpulse"
-version = "0.2.0"
+version = "0.2.1"
 description = "Cross-validated mode solvers for pair creation in time-dependent homogeneous electric fields"
 readme = "README.md"
 requires-python = ">=3.10"
