@@ -1,0 +1,103 @@
+name: Publish PairPulse v0.2.1
+on:
+  push:
+    branches: [release-v021]
+    paths: [.github/workflows/publish-v021.yml]
+permissions:
+  contents: write
+concurrency:
+  group: pairpulse-v021-publication
+  cancel-in-progress: false
+env:
+  DELTA_SHA256: 356c551ee0bdd3e74f91ad23f480de25da7538c91ae1a9d5fa33c3f207213405
+  ARCHIVE_SHA256: b76b0120df8d96baa539683d32a0f5bdb5e771982ff072ff692cacb253b676b8
+  PDF_SHA256: 2c52475b5415fcf14c868424a5ae04cd57a9e5bc9df70d0a03533954857e1d14
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assemble the specified distribution
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64, hashlib, io, os, zipfile, subprocess, json
+          root=Path('.').resolve()
+          encoded=''.join((root/f'release-delta-{i}.b64').read_text().strip() for i in (1,2))
+          data=base64.b64decode(encoded,validate=True)
+          assert hashlib.sha256(data).hexdigest()==os.environ['DELTA_SHA256']
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              for name in z.namelist():
+                  p=PurePosixPath(name)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  dest=root/name;dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(z.read(name))
+          manifest=(root/'CHECKSUMS.sha256').read_text().splitlines()
+          names=[line.split(None,1)[1] for line in manifest]
+          assert len(names)==47 and len(set(names))==47
+          for line in manifest:
+              digest,name=line.split(None,1)
+              assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest,name
+              assert 'validation' not in PurePosixPath(name).parts
+              assert PurePosixPath(name).suffix not in {'.csv','.json','.log'}
+          assert hashlib.sha256((root/'manuscript/pairpulse.pdf').read_bytes()).hexdigest()==os.environ['PDF_SHA256']
+          nb=json.loads((root/'notebooks/PairPulse_reproduction.ipynb').read_text())
+          assert all(not c.get('outputs') and c.get('execution_count') is None for c in nb['cells'] if c['cell_type']=='code')
+          allowed=set(names)|{'CHECKSUMS.sha256'}
+          tracked=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          obsolete=[n for n in tracked if n and n not in allowed]
+          if obsolete:subprocess.run(['git','rm','-f','--']+obsolete,check=True)
+          subprocess.run(['git','add','-f','--']+sorted(allowed),check=True)
+          out=root/'release-assets';out.mkdir()
+          archive=out/'PairPulse_submission_v0.2.1.zip'
+          with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for name in sorted(names)+['CHECKSUMS.sha256']:
+                  zi=zipfile.ZipInfo('PairPulse/'+name,date_time=(2026,10,10,0,0,0))
+                  zi.compress_type=zipfile.ZIP_DEFLATED;zi.external_attr=0o100644<<16
+                  z.writestr(zi,(root/name).read_bytes())
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==os.environ['ARCHIVE_SHA256']
+          (out/'SHA256SUMS.txt').write_text(os.environ['ARCHIVE_SHA256']+'  '+archive.name+'\n'+os.environ['PDF_SHA256']+'  pairpulse.pdf\n')
+          print('Distribution assembled; no numerical experiments executed.')
+          PY
+      - name: Publish the source commit and version tag
+        run: |
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = 2022892b978a056e3a50362d97e7b8582a307309
+          git merge-base --is-ancestor origin/main HEAD
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish PairPulse v0.2.1'
+          git push origin HEAD:main
+          git tag -a v0.2.1 -m 'PairPulse v0.2.1'
+          git push origin v0.2.1
+      - name: Publish downloadable files
+        run: |
+          cat > /tmp/pairpulse-release-notes.md <<'EOF'
+          PairPulse v0.2.1 provides Dirac-mode and quantum-kinetic solvers for pair production in spatially homogeneous pulsed electric fields.
+
+          Downloads:
+          - **PairPulse_submission_v0.2.1.zip**: Python source, reproduction scripts, notebook, manuscript, and six figures.
+          - **pairpulse.pdf**: manuscript.
+          - **SHA256SUMS.txt**: download checksums.
+
+          Numerical datasets and execution records are generated using the included scripts and are not bundled in this release. See the README for installation and reproduction instructions.
+          EOF
+          gh release create v0.2.1 --verify-tag --draft --title 'PairPulse v0.2.1' --notes-file /tmp/pairpulse-release-notes.md release-assets/PairPulse_submission_v0.2.1.zip release-assets/SHA256SUMS.txt manuscript/pairpulse.pdf
+          gh release edit v0.2.1 --draft=false --latest
+          test "$(gh api repos/ozalloum/PairPulse/releases/tags/v0.2.1 --jq .immutable)" = true
+          gh release download v0.2.1 --dir /tmp/pairpulse-download-check
+          cd /tmp/pairpulse-download-check
+          sha256sum -c SHA256SUMS.txt
+      - name: Remove superseded public release and preparation branches
+        run: |
+          gh release delete v0.2.0 --yes --cleanup-tag
+          git push origin --delete release-validation
+          git push origin --delete release-v021
+          gh api repos/ozalloum/PairPulse/releases --jq '[.[]|{tag:.tag_name,url:.html_url,immutable:.immutable}]'
