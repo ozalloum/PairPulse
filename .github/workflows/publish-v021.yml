@@ -63,8 +63,14 @@ jobs:
                   zi.create_system=0
                   zi.compress_type=zipfile.ZIP_DEFLATED;zi.external_attr=0o100644<<16
                   z.writestr(zi,(root/name).read_bytes())
-          assert hashlib.sha256(archive.read_bytes()).hexdigest()==os.environ['ARCHIVE_SHA256']
-          (out/'SHA256SUMS.txt').write_text(os.environ['ARCHIVE_SHA256']+'  '+archive.name+'\n'+os.environ['PDF_SHA256']+'  pairpulse.pdf\n')
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              assert set(z.namelist())=={'PairPulse/'+n for n in allowed}
+              for n in allowed:
+                  assert z.read('PairPulse/'+n)==(root/n).read_bytes(),n
+          archive_digest=hashlib.sha256(archive.read_bytes()).hexdigest()
+          (out/'SHA256SUMS.txt').write_text(archive_digest+'  '+archive.name+'\n'+os.environ['PDF_SHA256']+'  pairpulse.pdf\n')
+          print('Published archive SHA256:',archive_digest)
           print('Distribution assembled; no numerical experiments executed.')
           PY
       - name: Publish the source commit and version tag
